@@ -1,0 +1,17 @@
+{
+  "name": "rocky-desert",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "free-tex-packer-core": "^0.3.4",
+    "maxrects-packer": "^2.7.3",
+    "sharp": "^0.33.5"
+  }
+}
