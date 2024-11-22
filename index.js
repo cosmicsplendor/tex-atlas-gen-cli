@@ -41,7 +41,7 @@ const containerWidth = Math.max(
 // Pack options
 const options = {
     fixedSize: false,
-    padding: 1,
+    padding: 2,
     allowRotation: false,
     detectIdentical: true,
     allowTrim: true,
