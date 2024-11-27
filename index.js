@@ -5,50 +5,45 @@ const { readDir } = require('./utils');
 
 const exportPath = "C:/Users/defia/Documents/game dev/2.5D/src/assets/texatlas/rocky_desert";
 
-// Create export directory if it doesn't exist
 if (!fs.existsSync(exportPath)) {
     fs.mkdirSync(exportPath, { recursive: true });
 }
 
-// Get image paths
 const imagePaths = readDir();
 
-// Prepare images and calculate dimensions
-const margin = { x: 1, y: 1 }; // Using padding as margin
+const margin = { x: 1, y: 1 };
 const images = [];
 const rects = [];
 
-// First pass: collect image data and dimensions
 imagePaths.forEach(imagePath => {
     const contents = fs.readFileSync(imagePath);
     images.push({ path: imagePath, contents });
     
-    // Get image dimensions using the buffer header
-    // PNG header structure: https://www.w3.org/TR/PNG/#11IHDR
     const width = contents.readUInt32BE(16);
     const height = contents.readUInt32BE(20);
     rects.push({ width, height });
 });
 
-// Calculate optimal width using the heuristic
+// Calculate maximum dimensions needed
+const maxWidth = Math.max(...rects.map(r => r.width));
+const maxHeight = Math.max(...rects.map(r => r.height));
 const totalArea = rects.reduce((acc, cur) => acc + (cur.width + margin.x) * (cur.height + margin.y), 0);
-const containerWidth = Math.max(
-    rects[0].width + margin.x,
-    rects[0].height + margin.y,
-    Math.round(Math.sqrt(totalArea * 1.1))
-);
 
-// Pack options
+// Calculate dimensions that should fit all textures
+const targetWidth = Math.max(maxWidth, Math.ceil(Math.sqrt(totalArea * 1.5)));
+const targetHeight = Math.ceil(totalArea / targetWidth) + maxHeight;
+
 const options = {
-    fixedSize: false,
-    padding: 2,
+    fixedSize: true,
+    width: targetWidth,
+    height: targetHeight,
+    padding: 1,
     allowRotation: false,
     detectIdentical: true,
-    allowTrim: true,
+    allowTrim: false,
     exporter: "JsonHash",
     removeFileExtension: true,
     prependFolderName: true,
-    width: containerWidth
 };
 
 // Pack images
@@ -60,7 +55,7 @@ texturePacker(images, options, (files) => {
                 path.join(exportPath, 'texatlas.png'),
                 item.buffer
             );
-            console.log(`Generated atlas with calculated width: ${containerWidth}`);
+            console.log(`Generated atlas with calculated width: ${targetWidth}`);
         }
         // Handle the JSON file and transform it
         else if (item.name.endsWith('.json')) {

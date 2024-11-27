@@ -2,33 +2,46 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Reads all files from the images directory and returns their relative paths
+ * Recursively reads all image files from the images directory and its subdirectories
  * @returns {string[]} Array of relative file paths from the images directory
  */
-function readDir() {
-    const imagesDir = path.join(__dirname, 'images');
+function readDir(dir = 'images') {
+    const fullPath = path.join(__dirname, dir);
+    let results = [];
     
     try {
         // Check if directory exists
-        if (!fs.existsSync(imagesDir)) {
-            fs.mkdirSync(imagesDir);
+        if (!fs.existsSync(fullPath)) {
+            fs.mkdirSync(fullPath, { recursive: true });
+            return [];
         }
         
         // Read all files from the directory
-        const files = fs.readdirSync(imagesDir);
+        const files = fs.readdirSync(fullPath);
         
-        // Filter and map to relative paths
-        return files
-            .filter(file => {
-                const filePath = path.join(imagesDir, file);
-                return fs.statSync(filePath).isFile();
-            })
-            .map(file => path.join('images', file));
+        // Process each file/directory
+        files.forEach(file => {
+            const filePath = path.join(fullPath, file);
+            const stat = fs.statSync(filePath);
+            
+            if (stat.isDirectory()) {
+                // Recursively read subdirectories
+                const subResults = readDir(path.join(dir, file));
+                results = results.concat(subResults);
+            } else if (stat.isFile()) {
+                // Check if file is an image
+                const ext = path.extname(file).toLowerCase();
+                if (['.png', '.jpg', '.jpeg', '.gif'].includes(ext)) {
+                    results.push(path.join(dir, file));
+                }
+            }
+        });
             
     } catch (error) {
-        console.error('Error reading images directory:', error);
-        return [];
+        console.error('Error reading directory:', error);
     }
+    
+    return results;
 }
 
 module.exports = {
