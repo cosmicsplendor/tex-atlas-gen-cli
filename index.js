@@ -3,13 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const { readDir } = require('./utils');
 
-const exportPath = "C:/Users/defia/Documents/game dev/2.5D/src/assets/texatlas/rocky_desert";
+const brazenOrb = true
+
+const exportPath = brazenOrb ? "C:/Users/defia/Documents/game dev/neutrino bitmasked/src/assets/images": "C:/Users/defia/Documents/game dev/2.5D/src/assets/texatlas/rocky_desert";
 
 if (!fs.existsSync(exportPath)) {
     fs.mkdirSync(exportPath, { recursive: true });
 }
 
-const imagePaths = readDir();
+const imagePaths = readDir(brazenOrb ? "brazen orb" : "images");
 
 const margin = { x: 1, y: 1 };
 const images = [];
