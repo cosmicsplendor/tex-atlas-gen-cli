@@ -1,7 +1,7 @@
 const chokidar = require('chokidar');
 const { spawn } = require('child_process');
 const path = require('path');
-const brazenOrb = true
+const brazenOrb = false
 const imagesDir = path.join(__dirname, brazenOrb ? "brazen orb" : 'images');
 let isProcessing = false;
 let pendingRun = false;

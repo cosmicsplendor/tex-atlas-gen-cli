@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { readDir } = require('./utils');
 
-const brazenOrb = true
+const brazenOrb = false
 
 const exportPath = brazenOrb ? "C:/Users/defia/Documents/game dev/neutrino bitmasked/src/assets/images": "C:/Users/defia/Documents/game dev/2.5D/src/assets/texatlas/rocky_desert";
 
