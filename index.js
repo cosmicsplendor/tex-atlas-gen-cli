@@ -2,6 +2,7 @@ const texturePacker = require('free-tex-packer-core');
 const fs = require('fs');
 const path = require('path');
 const { readDir } = require('./utils');
+const sharp = require("sharp")
 
 const brazenOrb = false
 
@@ -50,14 +51,48 @@ const options = {
 
 // Pack images
 texturePacker(images, options, (files) => {
+    if (!files) return
     files.forEach(item => {
         // Handle the image file
         if (item.name.endsWith('.png')) {
-            fs.writeFileSync(
-                path.join(exportPath, 'texatlas.png'),
-                item.buffer
-            );
-            console.log(`Generated atlas with calculated width: ${targetWidth}`);
+            console.log("HERE")
+            // Load the buffer into Sharp
+            const image = sharp(item.buffer);
+            
+            // Extract the raw pixel data, premultiply alpha, and save back
+            image
+                .raw()
+                .toBuffer({ resolveWithObject: true })
+                .then(({ data, info }) => {
+                    // Premultiply alpha for each pixel
+                    for (let i = 0; i < data.length; i += 4) {
+                        const alpha = data[i + 3] / 255;
+                        data[i] = Math.round(data[i] * alpha);     // R
+                        data[i + 1] = Math.round(data[i + 1] * alpha); // G
+                        data[i + 2] = Math.round(data[i + 2] * alpha); // B
+                    }
+                    
+                    // Convert back to PNG and save
+                    return sharp(data, {
+                        raw: {
+                            width: info.width,
+                            height: info.height,
+                            channels: 4
+                        }
+                    })
+                    .png()
+                    .toBuffer();
+                })
+                .then(outputBuffer => {
+                    fs.writeFileSync(
+                        path.join(exportPath, 'texatlas.png'),
+                        outputBuffer
+                    );
+                    console.log(`Generated premultiplied atlas with calculated width: ${targetWidth}`);
+                })
+                .catch(err => {
+                    console.error('Error processing atlas:', err);
+                });
         }
         // Handle the JSON file and transform it
         else if (item.name.endsWith('.json')) {
