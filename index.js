@@ -6,7 +6,7 @@ const sharp = require("sharp")
 
 const brazenOrb = false
 
-const exportPath = brazenOrb ? "C:/Users/defia/Documents/game dev/neutrino bitmasked/src/assets/images": "C:/Users/defia/Documents/game dev/2.5D/src/assets/texatlas/rocky_desert";
+const exportPath = brazenOrb ? "C:/Users/defia/Documents/game dev/neutrino bitmasked/src/assets/images": "C:/Users/defia/Documents/game dev/pseudo3d/src/assets/texatlas";
 
 if (!fs.existsSync(exportPath)) {
     fs.mkdirSync(exportPath, { recursive: true });
