@@ -5,7 +5,7 @@ const outputFile = 'texatlas.png';
 const tempFile = 'temp_compressed.png';
 
 const COMPRESSION = {
-    aggressive: {
+    agressive: {
         compressionLevel: 9,
         adaptiveFiltering: true,
         palette: true,
@@ -14,24 +14,24 @@ const COMPRESSION = {
         dither: 1.0
     },
     minimal: {
-        compressionLevel: 1,         // Much lighter compression
-        adaptiveFiltering: false,    // Disabled to preserve more detail
+        compressionLevel: 9,         // Much lighter compression
+        adaptiveFiltering: true,    // Disabled to preserve more detail
         palette: false,              // Disabled to preserve original colors
-        quality: 95,                 // Higher quality
-        effort: 5,                   // Lower effort for lighter compression
+        quality: 90,                 // Higher quality
+        effort: 10,                   // Lower effort for lighter compression
         dither: 0                    // No dithering to preserve original colors
     },
     // Final compression after premultiplication
     preservePremultiplied: {
-        // compressionLevel: 6,         // Moderate compression that preserves values
-        // adaptiveFiltering: false,    // Disabled to preserve premultiplication
-        // palette: false,              // Disabled to preserve exact values
-        // dither: 0,                   // No dithering
-        // quality: 100                 // Preserve premultiplied values
+        compressionLevel: 6,         // Moderate compression that preserves values
+        adaptiveFiltering: false,    // Disabled to preserve premultiplication
+        palette: false,              // Disabled to preserve exact values
+        dither: 0,                   // No dithering
+        quality: 100                 // Preserve premultiplied values
     }
 }
 
-const COMPRESSION_MODE = "minimal"
+const COMPRESSION_MODE = "agressive"
 
 async function compressAndPremultiplyImage() {
     try {
