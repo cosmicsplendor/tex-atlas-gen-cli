@@ -4,18 +4,40 @@ const inputFile = 'tex.png';
 const outputFile = 'texatlas.png';
 const tempFile = 'temp_compressed.png';
 
+const COMPRESSION = {
+    aggressive: {
+        compressionLevel: 9,
+        adaptiveFiltering: true,
+        palette: true,
+        quality: 80,
+        effort: 8,
+        dither: 1.0
+    },
+    minimal: {
+        compressionLevel: 1,         // Much lighter compression
+        adaptiveFiltering: false,    // Disabled to preserve more detail
+        palette: false,              // Disabled to preserve original colors
+        quality: 95,                 // Higher quality
+        effort: 5,                   // Lower effort for lighter compression
+        dither: 0                    // No dithering to preserve original colors
+    },
+    // Final compression after premultiplication
+    preservePremultiplied: {
+        // compressionLevel: 6,         // Moderate compression that preserves values
+        // adaptiveFiltering: false,    // Disabled to preserve premultiplication
+        // palette: false,              // Disabled to preserve exact values
+        // dither: 0,                   // No dithering
+        // quality: 100                 // Preserve premultiplied values
+    }
+}
+
+const COMPRESSION_MODE = "minimal"
+
 async function compressAndPremultiplyImage() {
     try {
         // Step 1: Compress the original image first
         await sharp(inputFile)
-            .png({
-                compressionLevel: 9,
-                adaptiveFiltering: true,
-                palette: true,
-                quality: 80,
-                effort: 8,
-                dither: 1.0
-            })
+            .png(COMPRESSION[COMPRESSION_MODE])
             .toFile(tempFile);
 
         // Step 2: Load compressed image and premultiply
@@ -42,14 +64,7 @@ async function compressAndPremultiplyImage() {
                         channels: 4
                     }
                 })
-                .png({
-                    // Use minimal safe compression for final output to preserve premultiplication
-                    compressionLevel: 9,
-                    adaptiveFiltering: false,
-                    palette: false,
-                    dither: 0,
-                    quality: 100
-                })
+                .png(COMPRESSION.preservePremultiplied)
                 .toFile(outputFile);
             });
 
